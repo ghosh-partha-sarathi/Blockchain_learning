@@ -1,0 +1,269 @@
+Blockchain Basics
+-------------------
+* Symmetric Key Encryption
+    Where same key is used for encryption and decryption. e.g. Ceaser encryption
+
+* Public key Cryptography/Asymmetric Cryptography
+    Here a public-private key pair is used for encryption. The two keys are mathematically related.
+    It is computationally infeasible to compute the private key based on the public key.
+    Private key is kept safe and locked with a password while public key is published.
+    A data encrypted with private key can only be decrypted using the corresponding public key and vice versa.
+    e.g.- Rivest Shamir Adelman(RSA) Algorithm implementation
+    -> Trapdoor Function - A function that can only be computed one way, or at least can only be computed one way easily.
+    In RSA, the trapdoor function relies on how hard it is to factor large numbers into their prime factors.
+        e.g. Public Key: 944,871,836,856,449,473
+             Private Key: 961,748,941 and 982,451,653 (two prime factors of the public key)
+
+
+
+- Elliptic Curve Cryptography(ECC) algorithm is used in blockchain to generate the key pair for encryption.
+- ECC is stronger than RSA for a given number of bits.
+    e.g. 256 bits of ECC ~ 3072 bits of RSA
+- ECC is used in resource-constrained systems like smartphones, embedded computers, and cryptocurrency networks 
+  as it uses ~10% of the storage space and bandwidth required by RSA.
+- ECC’s Trapdoor Function: 
+    The trapdoor function is similar to a mathematical game of pool.
+    First, we start with an arbitrary point on the curve. Next, we use the dot function to find a new point. 
+    Finally, we keep repeating the dot function to hop around the curve until we finally end up at our last point. 
+       e.g.-
+        1. Starting at A:
+        2. A dot B = -C (Draw a line from A to B and it intersects at -C)
+        3. Reflect across the X-axis from -C to C
+        4. A dot C = -D (Draw a line from A to C and it intersects -D)
+        5. Reflect across the X-axis from -D to D
+        6. A dot D = -E (Draw a line from A to D and it intersects -E)
+        7. Reflect across the X-axis from -E to E
+        Public Key: Starting Point A, Ending Point E
+        Private Key: Number of hops from A to E
+    Explanation-
+    If we know where the starting point (A) is and how many hops are required to get to the ending point (E), 
+    it’s very easy to find the ending point. On the other hand, if we only know the starting point and 
+    ending point, it’s nearly impossible to find how many hops it took to get there.
+
+* Hashing-
+    Hashing is generating a value or values from a string of text using a mathematical function.
+    It is one of the ways to enable security during message transmission.
+    In simple terms, hashing is taking an input string of any length and giving an output of a fixed length. 
+    e.g. SHA-256(Secure Hashing Algorithm) is one of the most popular hashing algorithms which gives 
+         a fixed lenght output of 256 bits for any input.
+
+- There are six properties that a cryptographic hash function needs to have.
+    1. Deterministic
+    2. Quick Computation
+    3. Pre image resistant
+    4. Any change in input changes the output
+    5. Collision resistant
+    6. Puzzle Friendly
+
+- Puzzle Friendly
+    For every output “Y”, if k is chosen from a distribution with high min-entropy 
+    it is infeasible to find an input x such that H(k|x) = Y     
+
+- Cryptographic hash function example: MD5, SHA 1, SHA 256 and Keccak-256.
+- Hash Pointer - A hash pointer is similar to a pointer, but instead of just containing the address 
+                 of the previous block it also contains the hash of the data inside the previous block.  
+
+- A block header contains:
+    1. Version: The block version number
+    2. Time: the current timestamp
+    3. The current difficulty target
+    4. Hash of the previous block
+    5. Nonce
+    6. Hash of the Merkle Root
+
+- Merkle Tree: In Merkle tree, each non-leaf node is the hash of the values of their child nodes.
+                The leaf nodes are the nodes in the lowest tier of the tree.
+- Each block contains thousands and thousands of transactions. 
+  It will be very time inefficient to store all the data inside each block as a series. 
+  It will make searching any particular transaction extremely cumbersome and time-consuming. 
+  Searching a particular transaction in a block is much faster in a Merkle tree. 
+- Difficulty - Setting a difficulty makes the mining puzzle harder to solve and hence more time-consuming. 
+               WRT bitcoins the difficulty target is a 64-character string(which is the same as a SHA-256 output) 
+               which begins with a bunch of zeroes. Number of zeroes increases as the difficulty level increases. 
+               The difficulty level changes after every 2016th block.
+
+- Steps followed to add a new block to the bitcoin blockchain(by the bitcoin mining software):
+    1. The hash of the contents of the new block is taken.
+    2. A nonce (random string) is appended to the hash.
+    3. The new string is hashed again.
+    4. The final hash is then compared to the difficulty level and 
+        seen whether it’s actually less than that or not.
+    5. If not, then the nonce is changed and the process repeats again.
+    6. If yes, then the block is added to the chain and 
+        the public ledger is updated and alerted of the addition.
+    7. The miners responsible for this are rewarded with bitcoins.
+
+- Hash Rate - Hash rate basically means how fast these hashing operations are taking place while mining. 
+              A high hash rate means more people and software machines are involved in the mining process 
+              and the system is running smoothly. 
+              If the hash rate is too fast the difficulty level is increased. 
+              If the hash rate becomes too slow then the difficulty level is decreased. 
+
+- Transaction Integrity
+    To manage the integrity of transaction, we require:
+    1. Secure and unique account address of participant.
+    2. Authorization of transaction through digital signing.
+    3. Verifying that contents of transaction is not modified.
+
+- Consensus Protocol: The process by which a network of nodes confirms the record of previously verified transactions, 
+                      and by which it verifies new transactions, is known as a consensus protocol.    
+
+- Integrity of a block is managed by ensuring that:
+    Header contents are not tampered.
+    Transaction details are not tampered.
+    State transitions are computed, hashed and verified. 
+
+- Ethereum uses Keccak-256 as hashing algorithm.
+
+- Merkle tree hash is used to compute State Root hash, Transaction Root hash and Receipt Root hash.
+
+- A block header hash is not sent through the network but instead is calculated by each node as part of the 
+  verification process of each block.
+
+- Bitcoin Block header data
+    Field                   Size(bytes)     Description
+    Version                 4               The bitcoin version number.
+    Previous block hash     32              
+    Merkle Root             32              Hash of the root of Merkle tree of this block's transactions
+    Timestamp               4               Timestamp of block in UNIX
+    Difficulty Target       4               Difficulty target of block
+    Nonce                   4               Counter used to generate a correct hash.
+
+- Difficulty target of the block is the number of zeroes that must be found when hashing the block header 
+    in order to meet the required level of proof of work to maintain the block time at 10 minutes.
+
+- Proof of Work
+    It is the consensus algorithm used in Bitcoin blockchain.
+    In proof of work, miners compete with each other to add the next block(a set of transactions) 
+    in the chain by racing to solve an extremely difficult cryptographic puzzle. 
+    The first miner to solve the puzzle successfully is incentivised for his or her efforts. 
+
+- Proof of Stake
+    It is the consensus algorithm used in Ethereum blockchain.
+    'Proof of Stake' consensus algorithm was adopted into Ethereum blockchain in September 2022 through a hard fork.
+    Prior to that Ethereum also used to use 'Proof of Work' as the consensus algorithm.
+
+- Proof of Activity
+
+- Proof of Burn    
+
+- Proof of Capacity
+
+- Proof of Elapsed Time
+    This alternative consensus protocol is designed by Intel.
+
+* Blockchain Exceptions
+  - Double Spending:
+        When two miners solves the consensus puzzle very close in time to each other.
+        When more than one transaction refers the same digital asset.
+    This is just one of the many Exceptions that can happen in a blockchain.
+
+* Forks
+  - Hard Fork
+        A major change in the protocol.
+        In 2018 hard fork was done in Ethereum network.
+  - Soft Fork 
+        Bootstrapping a new software into the existing process is called soft fork.
+        It can be considered like a software patch or bug fix to address an issue. 
+        e.g. The script concept in Bitcoin was introduced using soft fork.
+
+- After a hard fork the emerging two chains are incompatible.   
+
+=============================================================================================================
+Defining a Blockchain
+----------------------
+The blockchain technology supports methods for
+
+a decentralized peer-to-peer network
+
+a collective trust model among unknown peers
+
+a distributed immutable ledger of records of transactions.
+
+Decentralization means the network operates on a user-to-user (or peer-to-peer) basis. 
+
+A Distributed Immutable Ledger means the data doesn't sit on one all-powerful server and the data stored in it cannot be deleted or edited 
+
+Transactions bring about transfer of value in Bitcoin Blockchain. The concept UTXO defines the inputs and outputs of such a transaction. 
+
+Once a block is verified and algorithmically agreed by the miners, it is added to the chain of blocks, viz., the blockchain. 
+
+An Unspent Transaction Output (UTXO) can be spent as an input in a new transaction. 
+
+The main operations in a blockchain are transaction validation and block creation with the consensus of the participants. Yet, there are many underlying implicit operations, as well. 
+
+A Smart Contract provides the very powerful capability of “code execution” for embedding business logic on a Blockchain. 
+
+Significant innovations such as smart contracts have opened up broader applications for blockchain technology. Private and permissioned- blockchains allow for controlled access to the blockchain, enabling many diverse business models. 
+
+In a Private Blockchain, access to the Blockchain is limited to selected participants. 
+
+Permissioned or Consortium Blockchain has the benefits of a public blockchain with allowing only users with “permission” to collaborate and transact.
+
+Ethereum Blockchain
+--------------------
+Smart contracts add a layer of logic and computation to the trust infrastructure supported by the blockchain.
+
+Smart contracts allow for execution of code, enhancing the basic value transfer capability of the Bitcoin Blockchain.
+
+Solidity is the high level programming language code for writing smart contracts that run on EVM.
+
+Ethereum Virtual Machine (EVM) is a special structure where code is deployed on after being translated into byte-code. 
+
+Accounts are basic units of Ethereum protocol: external owned accounts and smart contract accounts.
+
+An Ethereum transaction includes not only fields for transfer of Ethers but also for messages for invoking smart contract.
+
+Externally Owned Accounts, or EOA, are controlled by private keys.
+
+Contract Accounts, or CA, are controlled by code and can be activated only by an EOA.
+
+An Ethereum block contains the usual prev block hash, nonce, transaction details, but also details about gas (fee) limits, the state of the smart contracts and runner-up headers.
+
+Transaction Validation involves checking the timestamp and nonce combination to be valid, and the availability of sufficient fees for execution.
+
+Miner Nodes in the network receive, verify, gather and execute transactions.
+
+Any transaction in Ethereum, including transfer of Ethers, requires fees or gas points to be specified in the transaction.
+
+Gas Points are used to specify the fees instead of Ether for ease of comparison using standard values.
+
+Miners are paid fees for security, validation, execution of smart contract as well as for creation of blocks.
+
+Algorithms and Techniques
+---------------------------
+Elliptic Curve Cryptography (ECC) family of algorithms is used in Bitcoin as well as Ethereum Blockchain for generating the key pair.
+
+Rivest-Shamir-Adelman (RSA) is a commonly used implementation of public-private key in many applications, except Blockchains because of its need for a more efficient and stronger algorithm.
+
+Hashing transforms and maps an arbitrary length of input data value to a unique fixed length value.
+
+The following are two basic requirements of a hash function. 
+
+make certain that one cannot derive the original items hashed from the hash value.
+
+make sure that the hash value uniquely represents the original items hashed.
+
+A combination of hashing and encryption are used for securing the various elements of the blockchain. Private-public key pair and hashing are important foundation concepts in decentralized networks that operate beyond the trust boundary.
+
+Asymmetric cryptography uses public-private key pairs to encrypt and decrypt data.
+
+Essentials of Trust
+-----------------------
+A Merkle tree is constructed by hashing paired data (the leaves), then pairing and hashing the results until a single hash remains 
+
+Proof of work is a protocol that has the main goal of deterring cyber-attacks such as a distributed denial-of-service attack (DDoS) which has the purpose of exhausting the resources of a computer system by sending multiple fake requests. 
+
+Well-defined processes for handling exceptions improve trust in the blockchain. 
+
+Forks are mechanisms that add to the robustness of the Blockchain framework. 
+
+Well-managed forks help build credibility in the blockchain by providing approaches to manage unexpected faults and planned improvements. 
+
+Soft fork and hard fork in the Blockchain world is like the release of software patches and new versions of operating systems respectively. 
+
+A Soft Fork is a fork where updated versions of the protocol are backwards compatible with previous versions. 
+
+A Hard Fork is a change of the protocol that is not backwards compatible with older versions of the client. Participants would absolutely need to upgrade their software in order to recognize new blocks. 
+
+Ommer Blocks contribute to the security of the main chain, but are not considered the canonical "truth" for that particular chain height. 
