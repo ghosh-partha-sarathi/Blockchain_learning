@@ -1,0 +1,4 @@
+- In ethereum every full node processes every transaction and stores the entire state.
+- Special "gas" fee is charged for operations that take up storage.
+- RLP
+  RLP(Recursive Length Prefix) encoding is the serialization algorithm used in Ethereum.

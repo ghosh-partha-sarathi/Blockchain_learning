@@ -179,6 +179,7 @@ a decentralized peer-to-peer network
 a collective trust model among unknown peers
 
 a distributed immutable ledger of records of transactions.
+    thus, defining Blockchain as a decentralized, trusted, distributed and immutable ledger.
 
 Decentralization means the network operates on a user-to-user (or peer-to-peer) basis. 
 
